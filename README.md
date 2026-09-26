@@ -30,6 +30,32 @@ The services will be available at:
 
 ---
 
+## REST API Endpoints
+
+Full documentation, including schemas, examples, and error codes, is available via the Swagger UI at `http://localhost:3000/docs`.
+
+### 1. `GET /slots`
+- **Description:** Returns all slots that do not have an active booking.
+- **Sorting:** Sorted by `startsAt` ascending, then `id` ascending.
+- **Response:** `200 OK` with `{ "slots": [...] }`.
+
+### 2. `POST /bookings`
+- **Description:** Creates a new booking for a slot.
+- **Payload:** `{ "slotId": "uuid", "customerName": "Alice", "customerEmail": "alice@example.com" }`
+- **Responses:**
+  - `201 Created`: Booking successful.
+  - `400 Bad Request`: Validation failed (e.g., missing name, invalid email).
+  - `404 Not Found`: Slot does not exist.
+  - `409 Conflict`: Slot already has an active booking.
+
+### 3. `DELETE /bookings/:bookingId`
+- **Description:** Cancels an active booking and restores slot availability. Safe to call repeatedly (idempotent).
+- **Responses:**
+  - `200 OK`: Returns the cancelled booking.
+  - `404 Not Found`: Booking does not exist.
+
+---
+
 ## Socket.IO Events
 
 The server broadcasts real-time events on the default namespace (`/`) at path `/socket.io`.

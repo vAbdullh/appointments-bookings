@@ -73,6 +73,7 @@ Return unexpected errors as 500 INTERNAL_ERROR without exposing database details
 ```
 
 ## 5. Swagger and docs
+(Antigravity (Gemini 3.1 Pro) )
 
 ### Prompt
 
@@ -85,7 +86,7 @@ Match the current implementation and task requirements. Keep changes minimal; do
 ```
 
 ## 6. Integration tests
-
+(Antigravity (Gemini 3.1 Pro) )
 ### prompt
 ```text
 Add integration tests using Jest + Supertest and a separate real PostgreSQL test database. Do not mock Prisma or the database.
@@ -99,4 +100,28 @@ Test these scenarios:
 Use the app’s existing validation and error handling. Apply Prisma migrations to the test database and reset test data between tests. Make sure cleanup cannot run against the development database.
 
 Add an `npm run test:e2e` command and simple setup instructions in the README. Run the tests and fix any failures. Keep changes minimal and follow the existing project structure.
+```
+
+## 7. Review and verification
+(Antigravity (Gemini 3.1 Pro) )
+
+### Prompt
+
+```text
+Review the existing project against the original task requirements. Inspect the code and run the tests. Do not change code yet.
+
+Check:
+- GET /slots returns only available slots, ordered by startsAt, then id.
+- POST /bookings trims and validates input and returns the correct responses and error codes.
+- The database prevents multiple active bookings per slot, including concurrent requests.
+- Cancellation preserves booking history, restores availability, and is safe to repeat without affecting newer bookings.
+- JSON responses, UUIDs, UTC dates, and error formats match the specification.
+- Socket.IO events match the required payloads, emit only after commit, and never expose customer details or repeat on unchanged cancellations.
+- /docs and /openapi.json accurately document all endpoints, validation, responses, examples, and error codes.
+- Integration tests use real PostgreSQL and verify booking, overlapping requests, cancellation, and rebooking.
+- Migrations, seed, test setup, and documented startup commands work.
+- README includes setup, Socket.IO testing, design decisions, actual time spent, unfinished work, and AI disclosure.
+- Delivery includes source, package lockfile, Prisma schema, migrations, seed, tests, README, and .env.example. The ZIP excludes secrets, actual .env files, and node_modules.
+
+Return a concise checklist marked PASS, FAIL, or NOT VERIFIED. For each issue, give the file location and the smallest recommended fix. Clearly distinguish tests you ran from code you only inspected. Do not suggest extra features outside the task.
 ```

@@ -94,3 +94,21 @@ The test runner will automatically create/reset the `appointment_booking_test` d
 ### Test Results Preview
 
 ![Integration Tests Result](./integration_tests.png)
+
+---
+
+## Project Overview
+
+### Design Decisions
+- **Framework & Architecture**: NestJS was chosen for its highly modular, scalable, and testable architecture. The controllers are kept thin, delegating all business logic to the services.
+- **Concurrency & Data Integrity**: To strictly prevent double-booking at the database level regardless of application scaling, a partial unique index (`bookings_one_active_per_slot ON bookings(slot_id) WHERE status='active'`) was implemented directly via PostgreSQL. This completely mitigates race conditions that could occur if relying on a simple "check-then-insert" logic.
+- **Testing Approach**: Tests were implemented directly against a live PostgreSQL test database without mocking Prisma. This ensures that database-level constraints (like the partial unique index protecting against concurrent requests) are actually validated during CI. Native `tsc` compilation is used for tests to seamlessly bypass Jest/ESM transpilation complexities.
+
+### Actual Time Spent
+Approximately 4 hours.
+
+### Unfinished Work
+- None. All functional requirements, edge cases, Docker deployment, and OpenAPI documentation endpoints have been fully implemented.
+
+### AI Disclosure
+This codebase was developed with the assistance of an AI coding assistant (Google Antigravity). The AI was utilized to scaffold the NestJS boilerplate, generate repetitive integration tests, write documentation, and configure the Docker/Jest testing environments. All generated code was thoroughly reviewed and tested.

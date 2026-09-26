@@ -71,3 +71,15 @@ Use this error format:
 { "error": { "code": "...", "message": "..." } }
 Return unexpected errors as 500 INTERNAL_ERROR without exposing database details.
 ```
+
+## 5. Swagger and docs
+
+### Prompt
+
+```text
+Add Swagger documentation to the existing NestJS backend at `/docs`, with the OpenAPI specification at `/openapi.json`.
+
+Document the three existing endpoints, including inputs, required fields, validation, response shapes, all status/error codes, and examples. Explain that repeated cancellation returns the same cancelled booking and that authentication is not required.
+
+Match the current implementation and task requirements. Keep changes minimal; do not refactor unrelated code.
+```

@@ -20,7 +20,8 @@ docker-compose up -d --build
 
 The services will be available at:
 - **Backend (NestJS API)**: http://localhost:3000
-- **Swagger API Docs**: http://localhost:3000/api
+- **Swagger UI**: http://localhost:3000/docs
+- **OpenAPI JSON spec**: http://localhost:3000/openapi.json
 - **Database (PostgreSQL)**: localhost:5432
 
 ### Features

@@ -26,3 +26,49 @@ The services will be available at:
 ### Features
 - **Backend:** TypeScript, NestJS, Prisma, Socket.IO, and Swagger
 - **Database:** PostgreSQL with a persistent volume and health check
+
+---
+
+## Socket.IO Events
+
+The server broadcasts real-time events on the default namespace (`/`) at path `/socket.io`.
+
+| Event | Payload | Fired when |
+|---|---|---|
+| `slot.booked` | `{ slotId, bookingId, available: false }` | A booking is successfully created |
+| `slot.released` | `{ slotId, bookingId, available: true }` | An active booking is cancelled |
+
+Events are emitted **once per actual database change** — never for failed requests or repeated cancellations.
+
+### Testing events without a frontend
+
+**1. Install the client dependency (once):**
+```bash
+cd backend
+npm install socket.io-client
+```
+
+**2. In one terminal — start the listener:**
+```bash
+node scripts/listen-events.mjs
+# ✅ Connected  id=abc123  →  http://localhost:3000
+# Listening for slot.booked and slot.released …
+```
+
+**3. In another terminal — trigger events via curl:**
+
+```bash
+# Get an available slot id
+SLOT_ID=$(curl -s http://localhost:3000/slots | node -e "process.stdin.resume();let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>console.log(JSON.parse(d).slots[0].id))")
+
+# Book it  →  emits slot.booked
+curl -s -X POST http://localhost:3000/bookings \
+  -H "Content-Type: application/json" \
+  -d "{\"slotId\":\"$SLOT_ID\",\"customerName\":\"Alice\",\"customerEmail\":\"alice@example.com\"}" | jq .
+
+# Copy the booking id from the response, then cancel it  →  emits slot.released
+BOOKING_ID=<paste-id-here>
+curl -s -X DELETE http://localhost:3000/bookings/$BOOKING_ID | jq .
+```
+
+You should see the events printed in the listener terminal in real time.

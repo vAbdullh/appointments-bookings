@@ -4,6 +4,7 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { EventsGateway } from '../events/events.gateway.js';
 import { CreateBookingDto } from './dto/create-booking.dto.js';
 import { Prisma } from '@prisma/client';
 
@@ -17,7 +18,10 @@ const BOOKING_SELECT = {
 
 @Injectable()
 export class BookingsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly events: EventsGateway,
+  ) {}
 
   async createBooking(dto: CreateBookingDto) {
     // Verify the slot exists
@@ -41,6 +45,9 @@ export class BookingsService {
         },
         select: BOOKING_SELECT,
       });
+
+      // Emit only after successful DB commit
+      this.events.emitSlotBooked(booking.slotId, booking.id);
 
       return { booking };
     } catch (err) {
@@ -74,9 +81,7 @@ export class BookingsService {
 
   async cancelBooking(bookingId: string) {
     // Atomic conditional update: only transitions active → cancelled.
-    // If the booking is already cancelled this is a no-op (count = 0).
-    // This means two concurrent cancel requests are both safe:
-    // exactly one will perform the update; the other skips it harmlessly.
+    // count = 1 means an actual change happened; count = 0 means already cancelled.
     const { count } = await this.prisma.booking.updateMany({
       where: { id: bookingId, status: 'active' },
       data: { status: 'cancelled' },
@@ -94,8 +99,10 @@ export class BookingsService {
       });
     }
 
-    // suppress unused-variable warning — count is intentionally checked
-    void count;
+    // Emit only when an actual active→cancelled transition happened (not on repeats)
+    if (count === 1) {
+      this.events.emitSlotReleased(booking.slotId, booking.id);
+    }
 
     return { booking };
   }

@@ -83,3 +83,20 @@ Document the three existing endpoints, including inputs, required fields, valida
 
 Match the current implementation and task requirements. Keep changes minimal; do not refactor unrelated code.
 ```
+
+## 6. Integration tests
+
+### prompt
+```text
+Add integration tests using Jest + Supertest and a separate real PostgreSQL test database. Do not mock Prisma or the database.
+
+Test these scenarios:
+- Booking returns 201 and hides the slot from GET /slots.
+- Two concurrent requests for the same slot return one 201 and one 409, with exactly one active booking in the database.
+- Cancellation returns 200, restores availability, and allows rebooking.
+- Repeated cancellation returns the same cancelled booking without affecting a newer booking for that slot.
+
+Use the app’s existing validation and error handling. Apply Prisma migrations to the test database and reset test data between tests. Make sure cleanup cannot run against the development database.
+
+Add an `npm run test:e2e` command and simple setup instructions in the README. Run the tests and fix any failures. Keep changes minimal and follow the existing project structure.
+```

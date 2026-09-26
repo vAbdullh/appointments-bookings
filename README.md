@@ -73,3 +73,20 @@ curl -s -X DELETE http://localhost:3000/bookings/$BOOKING_ID | jq .
 ```
 
 You should see the events printed in the listener terminal in real time.
+
+---
+
+## Integration Tests
+
+The project includes integration tests using Jest and Supertest. The tests use a separate test database to avoid affecting development data.
+
+### Running Tests
+
+1. Start your local PostgreSQL server (it must be available at `localhost:5432`, e.g., via the provided `docker-compose`).
+2. Run the end-to-end tests:
+   ```bash
+   cd backend
+   npm run test:e2e
+   ```
+
+The test runner will automatically create/reset the `appointment_booking_test` database and apply the necessary schemas.

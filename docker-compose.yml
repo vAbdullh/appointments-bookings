@@ -19,8 +19,8 @@ services:
     command: npm run start:dev
 
   db:
-    image: postgres
-    pull_policy: if_not_present
+    image: postgres:16-alpine
+    pull_policy: never
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER}

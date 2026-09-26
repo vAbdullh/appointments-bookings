@@ -43,3 +43,7 @@ backend/prisma/migrations/**/migration_lock.toml
 # Coverage
 coverage/
 .nyc_output/
+
+# Testing
+dist-test/
+*.tsbuildinfo

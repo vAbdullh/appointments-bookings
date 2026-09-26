@@ -90,3 +90,7 @@ The project includes integration tests using Jest and Supertest. The tests use a
    ```
 
 The test runner will automatically create/reset the `appointment_booking_test` database and apply the necessary schemas.
+
+### Test Results Preview
+
+![Integration Tests Result](./integration_tests.png)

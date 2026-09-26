@@ -36,5 +36,38 @@ create getting started in readme with project title "appointment-booking"
 ```text
 Now create well stractured database schema in sql with make sure of rules and well indexing, make sure to  use unique combined where it need to prevent the duplicate booknig
 ``` 
+## 4. Slots & booking endpoints 
+(Antigravity ( Claude Sonnet 4.6) )
 
-g
+### Prompt 
+```text
+Implement these two endpoints:
+1. GET /slots: Return available slots, sorted by startsAt, then id.
+2. POST /bookings: Validate and trim inputs, create bookings, and handle concurrent conflicts with 409.
+
+in the existing NestJS project using the existing Prisma schema.
+
+Use a clean NestJS structure:
+- SlotsModule, SlotsController, and SlotsService.
+- BookingsModule, BookingsController, and BookingsService.
+- DTOs for request validation and a shared Prisma service.
+- Keep controllers thin and business logic in services. NestJS controller decorators handle routing; separate Express router files are unnecessary.
+1. GET /slots
+   - Return only slots without an active booking.
+   - Sort by startsAt ascending, then id ascending.
+   - Response: { "slots": [...] }, including only id, startsAt, and endsAt.
+2. POST /bookings
+   - Require slotId, customerName, and customerEmail.
+   - Trim name and email before validation and saving.
+   - Validate UUID, nonempty name, and valid email.
+   - Let the database generate the booking UUID.
+   - Return 201 with { "booking": { "id", "slotId", "customerName", "customerEmail", "status" } }.
+   - Return 400 VALIDATION_ERROR for invalid input, including malformed JSON.
+   - Return 404 SLOT_NOT_FOUND for a nonexistent slot.
+   - Return 409 SLOT_UNAVAILABLE when the slot already has an active booking.
+   - Enforce one active booking per slot using a database partial unique index. Do not rely only on checking availability before inserting.
+   - Two concurrent valid requests for the same slot must return one 201 and one 409.
+Use this error format:
+{ "error": { "code": "...", "message": "..." } }
+Return unexpected errors as 500 INTERNAL_ERROR without exposing database details.
+```
